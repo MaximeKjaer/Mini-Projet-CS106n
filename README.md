@@ -6,16 +6,21 @@ Mini-projet d'Introduction à la Programmation (CS-106n): Un système de recomme
 
 ## Tasks
 
-[ ] Part 1
+- [ ] Part 1
+
   - [X] isMatrix
   - [X] matrixToString
   - [ ] createMatrix
-[ ] Part 2
+
+- [ ] Part 2
+
   - [ ] multipilyMatrix
   - [ ] RMSE
   - [ ] updateUElem
   - [ ] updateVElem
-[ ] Part 3
+
+- [ ] Part 3
+
  - [ ] optimizeU
  - [ ] optimizeV
  - [ ] recommend
