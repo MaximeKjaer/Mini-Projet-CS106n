@@ -10,7 +10,7 @@ Mini-projet d'Introduction à la Programmation (CS-106n): Un système de recomme
 
   - [X] isMatrix
   - [X] matrixToString
-  - [ ] createMatrix
+  - [X] createMatrix
 
 - [ ] Part 2
 

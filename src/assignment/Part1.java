@@ -9,19 +9,23 @@
 
 package assignment;
 
+import java.util.Random;
+
 public class Part1 {
 	public static String matrixToString(double[][] A) {
-		//There's little verification here, as it's supposed to be done in isMatrix
+		//We return null if matrix is null to avoid unnecessary exceptions
 		if (A == null) return null;
 		else {
 			String output = "{\n";
-			for (int i = 0; i < A.length; ++i) {
+			int inputLength = A.length;
+			for (int i = 0; i < inputLength; ++i) {
 				output += " {";
-				for (int j = 0; j < A[i].length; ++j) {
+				for (int j = 0; j < A[i].length; ++j) { 
+					//We keep some flexibility because we aren't sure to always print n x m matrix
 					output += A[i][j];
 					if (j < A[i].length-1) output += ",";
 				}
-				output += (i < A.length-1) ? "},\n" : "}\n";
+				output += (i < inputLength-1) ? "},\n" : "}\n";
 			}
 			output += "};";
 			return output;
@@ -35,7 +39,7 @@ public class Part1 {
 			int amountRows = A.length, sizeRowToCompare = A[0].length;
 			if (sizeRowToCompare == 0) return false;
 			else {
-				for (int i = 1; i<amountRows;++i) {
+				for (int i = 1; i < amountRows; ++i) {
 					//Check the size of row -> if one is empty
 					if (A[i].length != sizeRowToCompare) return false;
 				}
@@ -45,8 +49,27 @@ public class Part1 {
 		}
 	}
 	
+	public static double[][] createMatrix(int n, int m, int k, int l) {
+		if (n <= 0 || m <= 0 || k > l) {
+			return null;
+		}
+		else {
+			double[][] randomMatrix = new double[n][m];
+			if (k != l) { //else we return the default n x m matrix
+				Random random = new Random();
+				for (int i = 0; i < n; ++i) {
+					for (int j = 0; j < m; ++j) {
+						//create a pseudo random number in [k,l]
+						randomMatrix[i][j] = random.nextInt(l-k) + random.nextDouble() + k;
+					}
+				}
+			}
+			return randomMatrix;
+		}
+	}
+	
 	public static void main(String[] args) {
-		double[][] testMatrix = {
+		/*double[][] testMatrix = {
 				{11.0,0.0,9.0,8.0,7.0},
 				{18.0,0.0,18.0,18.0,18.0},
 				{29.0,28.0,27.0,0.0,25.0},
@@ -65,8 +88,9 @@ public class Part1 {
 		System.out.println(isMatrix(A1));
 		System.out.println(isMatrix(A2));
 		System.out.println(isMatrix(A3));
-		System.out.println(isMatrix(A4));
-		System.out.println(matrixToString(A1));
+		System.out.println(isMatrix(A4));*/
+		//System.out.println(matrixToString(A1));
+		System.out.println(matrixToString(createMatrix(5, 5, -10, 10)));
 		//System.out.println(matrixToString(B));
 	}
 }
