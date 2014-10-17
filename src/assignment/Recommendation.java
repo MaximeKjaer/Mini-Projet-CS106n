@@ -30,11 +30,11 @@ public class Recommendation {
 				for (int j = 0; j < A[i].length; ++j) { 
 					//We keep some flexibility because we aren't sure to always print a strict n x m matrix
 					output += A[i][j];
-					if (j < A[i].length-1) output += ",";
+					if (j < A[i].length-1) output += ", ";
 				}
 				output += (i < inputLength-1) ? "},\n" : "}\n";
 			}
-			output += "};";
+			output += "}";
 			return output;
 		}
 	}
@@ -57,8 +57,27 @@ public class Recommendation {
 	}
 	
 	public static double[][] multiplyMatrix(double[][] A, double[][] B) {
-		/* Méthode à coder */
-		return null;	
+		if (isMatrix(A) && isMatrix(B)) {
+			//first sanity check, if A and B aren't matrixes we can't possibly multiply them
+			int[] amountRows = {A.length, B.length}, amountCols = {A[0].length, B[0].length};
+			if (amountCols[0] == amountRows[1]) {
+				//second sanity check, because we can multiply A and B only if the amount of cols in A == amount of rows in B
+				double[][] outputMatrix = new double[amountRows[0]][amountCols[1]];
+				for (int i = 0; i < amountRows[0]; ++i) { //iteration on the rows
+					for (int j = 0; j < amountCols[1]; ++j) { //iteration on the cols
+						double valueAtij = 0.;
+						for (int d = 0; d < amountRows[1]; ++d) { //calculation of the value p_ij
+							valueAtij += A[i][d] * B[d][j];
+						}
+						//we update the value in the outputMatrix
+						outputMatrix[i][j] = valueAtij;
+					}
+				}
+				return outputMatrix;
+			}
+			else return null;
+		}
+		else return null;	
 	}
 	
 	public static double[][] createMatrix( int n, int m, int k, int l) {
@@ -111,7 +130,12 @@ public class Recommendation {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println(matrixToString(createMatrix(5, 5, -10, 10)));
+		//System.out.println(matrixToString(createMatrix(5, 5, -10, 10)));
+		double[][] A = createMatrix(2, 15, 0, 5);
+		double[][] B = createMatrix(15, 3, 0, 5);
+		System.out.println(matrixToString(A));
+		System.out.println(matrixToString(B));
+		System.out.println(matrixToString(multiplyMatrix(A, B)));
 	}
 }
 

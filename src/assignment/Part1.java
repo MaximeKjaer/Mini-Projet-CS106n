@@ -23,11 +23,11 @@ public class Part1 {
 				for (int j = 0; j < A[i].length; ++j) { 
 					//We keep some flexibility because we aren't sure to always print a strict n x m matrix
 					output += A[i][j];
-					if (j < A[i].length-1) output += ",";
+					if (j < A[i].length-1) output += ", ";
 				}
 				output += (i < inputLength-1) ? "},\n" : "}\n";
 			}
-			output += "};";
+			output += "}";
 			return output;
 		}
 	}
