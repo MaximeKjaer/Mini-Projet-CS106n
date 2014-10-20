@@ -15,7 +15,7 @@ Mini-projet d'Introduction à la Programmation (CS-106n): Un système de recomme
 - [ ] Part 2
 
   - [X] multipilyMatrix
-  - [ ] RMSE
+  - [X] RMSE
   - [ ] updateUElem
   - [ ] updateVElem
 

@@ -1,8 +1,11 @@
 #Changelog#
 
+20.10
+- added rmse. reworked createMatrix to fit the forum recommendations, modified order of conditions in  multiplyMAtrix to fit the style of the rest of the code.
+
 17.10
 - added Recommendation.java. <strong>You need to update your sciper</strong>. slightly retouched the code
-- started PArt2.java => added multiplyMatrix. Updated Recommendation.java
+- started Part2.java => added multiplyMatrix. Updated Recommendation.java
 
 16.10
 - added createMatrix. Slightly updated matrixToString. Added comments + added some space. There should be a space when there's an operator.
