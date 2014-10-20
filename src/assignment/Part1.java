@@ -61,7 +61,8 @@ public class Part1 {
 				for (int i = 0; i < n; ++i) {
 					for (int j = 0; j < m; ++j) {
 						//create a pseudo random number in [k,l]
-						randomMatrix[i][j] = (l-k)*random.nextDouble() + k;
+						int delta = l-k, randomInt = random.nextInt(delta+1);
+						randomMatrix[i][j] = randomInt + (randomInt == delta ?  0 : random.nextDouble()) + k;
 					}
 				}
 			}

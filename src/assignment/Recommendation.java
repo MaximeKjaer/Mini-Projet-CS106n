@@ -91,7 +91,8 @@ public class Recommendation {
 				for (int i = 0; i < n; ++i) {
 					for (int j = 0; j < m; ++j) {
 						//create a pseudo random number in [k,l]
-						randomMatrix[i][j] = (l-k)*random.nextDouble() + k;
+						int delta = l-k, randomInt = random.nextInt(delta+1);
+						randomMatrix[i][j] = randomInt + (randomInt == delta ?  0 : random.nextDouble()) + k;
 					}
 				}
 			}
@@ -145,8 +146,8 @@ public class Recommendation {
 	}
 	
 	public static void main(String[] args) {
-		//System.out.println(matrixToString(createMatrix(5, 5, -10, 10)));
-		double[][] A = createMatrix(2, 2, 0, 5);
+		System.out.println(matrixToString(createMatrix(20, 20, 0, 5)));
+		/*double[][] A = createMatrix(2, 2, 0, 5);
 		double[][] B = createMatrix(2, 2, 0, 5);
 		System.out.println(matrixToString(A));
 		System.out.println(matrixToString(B));
@@ -157,7 +158,7 @@ public class Recommendation {
 		System.out.println(matrixToString(P));
 		System.out.println(rmse(M, P));
 		double[][] M2 = {{0,0},{0,0}};
-		System.out.println(rmse(M2, P));
+		System.out.println(rmse(M2, P));*/
 	}
 }
 
