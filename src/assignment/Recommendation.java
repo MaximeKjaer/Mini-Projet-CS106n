@@ -109,7 +109,7 @@ public class Recommendation {
 				double sum = 0, epsilon = 1e-6; //sum (mij - pij)^2 / epsilon due to how double works
 				for (int i = 0; i < M.length; ++i) {
 					for (int j = 0; j < M[0].length; ++j) {
-						if (M[i][j] < -epsilon || M[i][j] > epsilon) {
+						if (Math.abs(M[i][j]) > epsilon) {
 							++divisor; //increment the amount of nonzero entries
 							sum += Math.pow((M[i][j] - P[i][j]),2);
 						}
