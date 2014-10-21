@@ -5,17 +5,17 @@ import java.util.Random;
 public class Recommendation {
 
 	/*
-	 * Inscrivez votre nom complet (prénom et nom de famille)
-	 * ainsi que votre numéro sciper ci-dessous :
+	 * Inscrivez votre nom complet (prÃ©nom et nom de famille)
+	 * ainsi que votre numÃ©ro sciper ci-dessous :
 	 */
 	
 	/* Etudiant 1 */
-	public static String NAME1 = "Timoté Vaucher";
+	public static String NAME1 = "TimotÃ© Vaucher";
 	public static int SCIPER1 = 246532;
 	
-	/* Etudiant 2 - laissez tel quel si vous avez codé le projet tout seul */
+	/* Etudiant 2 - laissez tel quel si vous avez codÃ© le projet tout seul */
 	public static String NAME2 = "Maxime Kjaer";
-	public static int SCIPER2 = 123789;
+	public static int SCIPER2 = 250694;
 	
 	private static Random random = new Random();
 	
@@ -115,33 +115,33 @@ public class Recommendation {
 						}
 					}
 				}
-				return divisor == 0 ? -1 : Math.sqrt(sum/divisor); //avoid division by 0
+				return divisor == 0 ? 0 : Math.sqrt(sum/divisor); //avoid division by 0
 			}
 		}
 	}
 	
 	public static double updateUElem( double[][] M, double[][] U, double[][] V, int r, int s ) {
-		/* Méthode à coder */	
+		/* MÃ©thode Ã  coder */	
 		return 0;
 	}
 	
 	public static double updateVElem( double[][] M, double[][] U, double[][] V, int r, int s ) {
-		/* Méthode à coder */	
+		/* MÃ©thode Ã  coder */	
 		return 0;		
 	}
 	
 	public static double[][] optimizeU( double[][] M, double[][] U, double[][] V) {
-		/* Méthode à coder */	
+		/* MÃ©thode Ã  coder */	
 		return null;		
 	}
 
 	public static double[][] optimizeV( double[][] M, double[][] U, double[][] V) {
-		/* Méthode à coder */	
+		/* MÃ©thode Ã  coder */	
 		return null;		
 	}
 	
 	public static int[] recommend( double[][] M, int d) {
-		/* Méthode à coder */	
+		/* MÃ©thode Ã  coder */	
 		return null;
 	}
 	
