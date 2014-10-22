@@ -45,7 +45,7 @@ public class Part2 {
 						}
 					}
 				}
-				return divisor == 0 ? -1 : Math.sqrt(sum/divisor); //avoid division by 0
+				return divisor == 0 ? 0 : Math.sqrt(sum/divisor); //avoid division by 0
 			}
 		}
 	}

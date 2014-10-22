@@ -12,6 +12,8 @@ package assignment;
 import java.util.Random;
 
 public class Part1 {
+	private static Random random = new Random();
+	
 	public static String matrixToString(double[][] A) {
 		//We return null if matrix is null to avoid unnecessary exceptions
 		if (A == null) return null;
@@ -57,12 +59,11 @@ public class Part1 {
 		else {
 			double[][] randomMatrix = new double[n][m];
 			if (k != l) { //else we return the default n x m matrix
-				Random random = new Random();
 				for (int i = 0; i < n; ++i) {
 					for (int j = 0; j < m; ++j) {
-						//create a pseudo random number in [k,l]
-						int delta = l-k, randomInt = random.nextInt(delta+1);
-						randomMatrix[i][j] = randomInt + (randomInt == delta ?  0 : random.nextDouble()) + k;
+						double randomMultipler = random.nextInt(Integer.MAX_VALUE)/(Integer.MAX_VALUE-1.);
+						//create a number in [0,1] with a great amount of digits after the decimal point
+						randomMatrix[i][j] = (l-k)*randomMultipler + k; // => in [k,l]
 					}
 				}
 			}

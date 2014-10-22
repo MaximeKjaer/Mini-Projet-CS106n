@@ -1,5 +1,8 @@
 #Changelog#
 
+22.10
+- reworked createMatrix to finally fit myself and the instructions
+
 20.10
 - added rmse. reworked createMatrix to fit the forum recommendations, modified order of conditions in  multiplyMAtrix to fit the style of the rest of the code.
 
