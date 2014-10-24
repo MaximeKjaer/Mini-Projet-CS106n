@@ -152,7 +152,7 @@ public class Recommendation {
 		}
 	}
 	
-	public static double updateVElem( double[][] M, double[][] U, double[][] V, int r, int s ) {
+	public static double updateVElem(double[][] M, double[][] U, double[][] V, int r, int s) {
 		double denominator = 0.;
 		double numerator = 0.;
 		double secondSum = 0.;
@@ -192,7 +192,34 @@ public class Recommendation {
 		return null;		
 	}
 	
-	public static int[] recommend( double[][] M, int d) {
+	private static double calculateStartingValue(double[][] M, int d) {
+		if (!isMatrix(M)) return Double.MAX_VALUE;
+		else {
+			int amountNonZero = 0;
+			double sum = 0.;
+			for (int i = 0; i < M.length; ++i) {
+				for (int j = 0; j < M[0].length; ++j) {
+					if (Math.abs(M[i][j]) > EPSILON) {
+						++amountNonZero;
+						sum += M[i][j];
+					}
+				}
+			}
+			return amountNonZero == 0 ? 0 : Math.sqrt(sum/(amountNonZero*d));
+		}
+	}
+	
+	private static double[][] createStartingMatrix(int amountRow, int amountCol, double startingValue) {
+		double[][] startingMatrix = new double[amountRow][amountCol];
+		for (int i = 0; i < amountRow; ++i) {
+			for (int j = 0; j < amountCol; ++j) {
+				startingMatrix[i][j] = startingValue;
+			}
+		}
+		return startingMatrix;
+	}
+	
+	public static int[] recommend(double[][] M, int d) {
 		/* Méthode à  coder */	
 		return null;
 	}
@@ -268,6 +295,24 @@ public class Recommendation {
 		System.out.println("Test 2 de updateUElem (expect ~6.000): " + updateUElem(m1_2, u1, v1, 0, 0));
 		System.out.println("Test 1 de updateVElem (expect ~7.100): " + updateVElem(m0, u1, v1, 0, 0));
 		System.out.println("Test 2 de updateVElem (expect ~7.750): " + updateVElem(m1_2, u1, v1, 0, 0));
+		
+		/*double startingValue = calculateStartingValue(m1_2, 2);
+		System.out.println(startingValue);*/
+		/*double[][] Utest = new double[m1_2.length][2], Vtest = new double[2][m1_2[0].length];
+		for (int i = 0; i < m1_2.length; ++i) {
+			for (int j = 0; j < 2; ++j) {
+				Utest[i][j] = startingValue;
+			}
+		}
+		for (int i = 0; i < 2; ++i) {
+			for (int j = 0; j < m1_2[0].length; ++j) {
+				Vtest[i][j] = startingValue;
+			}
+		}
+		System.out.println(matrixToString(Utest));
+		System.out.println(matrixToString(Vtest));
+		System.out.println(matrixToString(multiplyMatrix(Utest, Vtest)));*/
+		
 
 		/*
 		System.out.println(matrixToString(createMatrix(20, 20, 0, 5)));
