@@ -19,7 +19,7 @@ public class Recommendation {
 	
 	private static Random random = new Random();
 
-	private static final double EPSILON = 1e-6; // epsilon due to how double works
+	private static final double EPSILON = 1e-5; // epsilon due to how double works
 
 	public static String matrixToString(double[][] A) {
 		//We return null if matrix is null to avoid unnecessary exceptions
@@ -183,15 +183,43 @@ public class Recommendation {
 	}
 	
 	public static double[][] optimizeU( double[][] M, double[][] U, double[][] V) {
-		/* Méthode à  coder */	
-		return null;		
+		double rmseStart = 0;
+		double rmseEnd = 0;
+		int rows = U.length;
+		int cols = U[0].length;
+		do {
+			rmseStart = rmse(M, multiplyMatrix(U, V));
+			//System.out.println("RMSE Start: " + rmseStart);
+			for (int i = 0; i < rows; ++i) {
+				for (int j = 0; j < cols; ++j) {
+					U[i][j] = updateUElem(M, U, V, i, j);
+				}
+			}
+			rmseEnd = rmse(M, multiplyMatrix(U, V));
+			//System.out.println("RMSE End: " + rmseEnd);
+		} while ((rmseStart - rmseEnd) >= EPSILON);
+		return U;
 	}
 
 	public static double[][] optimizeV( double[][] M, double[][] U, double[][] V) {
-		/* Méthode à  coder */	
-		return null;		
+		double rmseStart = 0;
+		double rmseEnd = 0;
+		int rows = V.length;
+		int cols = V[0].length;
+		do {
+			rmseStart = rmse(M, multiplyMatrix(U, V));
+			//System.out.println("RMSE Start: " + rmseStart);
+			for (int i = 0; i < rows; ++i) {
+				for (int j = 0; j < cols; ++j) {
+					V[i][j] = updateVElem(M, U, V, i, j);
+				}
+			}
+			rmseEnd = rmse(M, multiplyMatrix(U, V));
+			//System.out.println("RMSE End: " + rmseEnd);
+		} while ((rmseStart - rmseEnd) >= EPSILON);
+		return V;
 	}
-	
+
 	private static double calculateStartingValue(double[][] M, int d) {
 		if (!isMatrix(M)) return Double.MAX_VALUE;
 		else {
@@ -225,8 +253,7 @@ public class Recommendation {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println("Test 1 (matrixToString):");
-		double[][] M = {
+		/*double[][] M = {
 			{ 11, 0, 9, 8, 7 },
 			{ 18, 0, 18, 18, 18 },
 			{ 29, 28, 27, 0, 25 },
@@ -332,5 +359,3 @@ public class Recommendation {
 		*/
 	}
 }
-
-
