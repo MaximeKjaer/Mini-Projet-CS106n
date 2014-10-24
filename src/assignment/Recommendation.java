@@ -18,7 +18,9 @@ public class Recommendation {
 	public static int SCIPER2 = 250694;
 	
 	private static Random random = new Random();
-	
+
+	private static final double EPSILON = 1e-6; // epsilon due to how double works
+
 	public static String matrixToString(double[][] A) {
 		//We return null if matrix is null to avoid unnecessary exceptions
 		if (A == null) return null;
@@ -106,10 +108,10 @@ public class Recommendation {
 			if (M.length != P.length || M[0].length != P[0].length) return -1; //different dimensions
 			else {
 				int divisor = 0; //Number of nonzero entries
-				double sum = 0, epsilon = 1e-6; //sum (mij - pij)^2 / epsilon due to how double works
+				double sum = 0.; //sum (mij - pij)^2
 				for (int i = 0; i < M.length; ++i) {
 					for (int j = 0; j < M[0].length; ++j) {
-						if (Math.abs(M[i][j]) > epsilon) {
+						if (Math.abs(M[i][j]) > EPSILON) {
 							++divisor; //increment the amount of nonzero entries
 							sum += Math.pow((M[i][j] - P[i][j]),2);
 						}
@@ -121,42 +123,63 @@ public class Recommendation {
 	}
 	
 	public static double updateUElem( double[][] M, double[][] U, double[][] V, int r, int s ) {
-		double newUElem = 0.0;
-		double denominator = 0.0;
-		double numerator = 0.0;
-		double secondSum = 0.0;
+		double denominator = 0.;
+		double numerator = 0.;
+		double secondSum = 0.;
 
-		int n = M.length;
 		int d = V.length;
 		int m = V[0].length;
 
 		for (int j = 0; j < m; j++) { //sum_j of v_sj^2
-			denominator += V[s][j] * V[s][j];
+			if (Math.abs(M[r][j]) > EPSILON) {
+				denominator += V[s][j] * V[s][j];
+			}
 		}
-		System.out.println("DENOMINATOR " + denominator);
-		if (denominator == 0.0) return 0.0; //Divide by zero!
+		if (denominator <= EPSILON) return 0.; //Divide by zero!
 		else {
-			for (int j = 0; j < m; j++) {
-				if (M[r][j] == 0) continue;
-				else {
-					secondSum = 0.0;
-					for (int k = 0; k < d; k++) {
+			for (int j = 0; j < m; ++j) {
+				if (Math.abs(M[r][j]) > EPSILON) {
+					secondSum = 0.;
+					for (int k = 0; k < d; ++k) {
 						if (k != s) {
 							secondSum += U[r][k] * V[k][j];
 						}
 					}
 					numerator += V[s][j] * (M[r][j] - secondSum);
-					System.out.println("j: "+j+"mrj: "+M[r][j]+", numerator:"+numerator);
 				}
 			}
-		newUElem = numerator / denominator;
-		return newUElem;
+		return numerator / denominator;
 		}
 	}
 	
 	public static double updateVElem( double[][] M, double[][] U, double[][] V, int r, int s ) {
-		/* Méthode à  coder */	
-		return 0;		
+		double denominator = 0.;
+		double numerator = 0.;
+		double secondSum = 0.;
+
+		int d = V.length;
+		int n = U.length;
+
+		for (int i = 0; i < n; i++) { //sum_j of v_sj^2
+			if (Math.abs(M[i][s]) > EPSILON) {
+				denominator += U[i][r] * U[i][r];
+			}
+		}
+		if (denominator <= EPSILON) return 0.; //Divide by zero!
+		else {
+			for (int i = 0; i < n; ++i) {
+				if (Math.abs(M[i][s]) > EPSILON) {
+					secondSum = 0.;
+					for (int k = 0; k < d; ++k) {
+						if (k != r) {
+							secondSum += U[i][k] * V[k][s];
+						}
+					}
+					numerator += U[i][r] * (M[i][s] - secondSum);
+				}
+			}
+		return numerator / denominator;
+		}
 	}
 	
 	public static double[][] optimizeU( double[][] M, double[][] U, double[][] V) {
@@ -243,7 +266,8 @@ public class Recommendation {
 		double v1[][] = { {1,1,1,1,1}, {1,1,1,1,1} };
 		System.out.println("Test 1 de updateUElem (expect ~6.750): " + updateUElem(m0, u1, v1, 0, 0));
 		System.out.println("Test 2 de updateUElem (expect ~6.000): " + updateUElem(m1_2, u1, v1, 0, 0));
-
+		System.out.println("Test 1 de updateVElem (expect ~7.100): " + updateVElem(m0, u1, v1, 0, 0));
+		System.out.println("Test 2 de updateVElem (expect ~7.750): " + updateVElem(m1_2, u1, v1, 0, 0));
 
 		/*
 		System.out.println(matrixToString(createMatrix(20, 20, 0, 5)));
