@@ -1,4 +1,4 @@
-package assignment;
+//package assignment;
 
 import java.util.Random;
 
@@ -121,8 +121,37 @@ public class Recommendation {
 	}
 	
 	public static double updateUElem( double[][] M, double[][] U, double[][] V, int r, int s ) {
-		/* Méthode à coder */
-		return 0;
+		double newUElem = 0.0;
+		double denominator = 0.0;
+		double numerator = 0.0;
+		double secondSum = 0.0;
+
+		int n = M.length;
+		int d = V.length;
+		int m = V[0].length;
+
+		for (int j = 0; j < m; j++) { //sum_j of v_sj^2
+			denominator += V[s][j] * V[s][j];
+		}
+		System.out.println("DENOMINATOR " + denominator);
+		if (denominator == 0.0) return 0.0; //Divide by zero!
+		else {
+			for (int j = 0; j < m; j++) {
+				if (M[r][j] == 0) continue;
+				else {
+					secondSum = 0.0;
+					for (int k = 0; k < d; k++) {
+						if (k != s) {
+							secondSum += U[r][k] * V[k][j];
+						}
+					}
+					numerator += V[s][j] * (M[r][j] - secondSum);
+					System.out.println("j: "+j+"mrj: "+M[r][j]+", numerator:"+numerator);
+				}
+			}
+		newUElem = numerator / denominator;
+		return newUElem;
+		}
 	}
 	
 	public static double updateVElem( double[][] M, double[][] U, double[][] V, int r, int s ) {
@@ -212,8 +241,8 @@ public class Recommendation {
 
 		double u1[][] = { {2,2}, {2,2}, {2,2}, {2,2}, {2,2} };
 		double v1[][] = { {1,1,1,1,1}, {1,1,1,1,1} };
-		//System.out.println("Test 1 de updateUElem (expect ~6.750): " + updateUElem(m0, u1, v1, 0, 0));
-		//System.out.println("Test 2 de updateUElem (expect ~6.000): " + updateUElem(m1_2, u1, v1, 0, 0));
+		System.out.println("Test 1 de updateUElem (expect ~6.750): " + updateUElem(m0, u1, v1, 0, 0));
+		System.out.println("Test 2 de updateUElem (expect ~6.000): " + updateUElem(m1_2, u1, v1, 0, 0));
 
 
 		/*
