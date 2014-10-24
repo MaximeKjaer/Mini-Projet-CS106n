@@ -221,8 +221,8 @@ public class Recommendation {
 	}
 
 	private static double calculateStartingValue(double[][] M, int d) {
-		if (!isMatrix(M)) return Double.MAX_VALUE;
-		else {
+		/*if (!isMatrix(M)) return Double.MAX_VALUE;
+		else {*/
 			int amountNonZero = 0;
 			double sum = 0.;
 			for (int i = 0; i < M.length; ++i) {
@@ -234,7 +234,7 @@ public class Recommendation {
 				}
 			}
 			return amountNonZero == 0 ? 0 : Math.sqrt(sum/(amountNonZero*d));
-		}
+		//}
 	}
 	
 	private static double[][] createStartingMatrix(int amountRow, int amountCol, double startingValue) {
@@ -248,11 +248,53 @@ public class Recommendation {
 	}
 	
 	public static int[] recommend(double[][] M, int d) {
-		/* Méthode à  coder */	
-		return null;
+		if (!isMatrix(M)) return null;
+		else {
+			double startingValue = calculateStartingValue(M, d);
+			double[][] U = createStartingMatrix(M.length, d, startingValue);/*=  {{3.0, 3.0},
+					{2.0, 1.0},
+					{0.0, 2.0},
+					{3.0, 3.0},
+					{1.0, 3.0}};//
+			//System.out.println(matrixToString(U));*/
+			double[][] V = createStartingMatrix(d, M[0].length, startingValue);/* {{1.0, 1.0, 1.0, 1.0, 1.0, 3.0},
+					{1.0, 3.0, 0.0, 1.0, 2.0, 3.0}};//createStartingMatrix(d, M[0].length, startingValue);*/
+			//System.out.println(matrixToString(V));
+			double rmseStart = 0, rmseEnd = 0;
+			do {
+				rmseStart = rmse(M, multiplyMatrix(U, V));
+				System.out.println("RMSE Start: " + rmseStart);
+				optimizeU(M, U, V);
+				optimizeV(M, U, V);
+				rmseEnd = rmse(M, multiplyMatrix(U, V));
+				System.out.println("RMSE End: " + rmseEnd);
+			} while ((rmseStart - rmseEnd) >= 1e-5);
+			System.out.println(matrixToString(multiplyMatrix(U, V)));
+			return null;
+		}
 	}
 	
 	public static void main(String[] args) {
+		/*int row = 5, col = 5;
+		double[][] P = createMatrix(col, row, 1, 10);*/
+		double[][] M = {{6.0, 12.0, 3.0, 6.0, 0.0, 0.0},
+				{3.0, 5.0, 2.0, 3.0, 0.0, 9.0},
+				{0.0, 0.0, 0.0, 2.0, 4.0, 6.0},
+				{6.0, 12.0, 3.0, 0.0, 0.0, 18.0},
+				{4.0, 0.0, 1.0, 4.0, 0.0, 12.0}};/* = new double[row][col];
+		for (int i = 0; i < row; ++i) {
+			for (int j = 0; j < col; ++j) {
+				M[i][j] = P[i][j];
+			}
+		}
+		for (int i = 0; i < row* (int) Math.ceil(Math.sqrt(col)); ++i) {
+			M[random.nextInt(row)][random.nextInt(col)] = 0;
+		}*/
+		
+		System.out.println(matrixToString(M));
+		recommend(M, 10);
+		//System.out.println(matrixToString(P));
+		
 		/*double[][] M = {
 			{ 11, 0, 9, 8, 7 },
 			{ 18, 0, 18, 18, 18 },
