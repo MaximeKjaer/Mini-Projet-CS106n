@@ -101,7 +101,7 @@ public class Recommendation {
 	}
 	
 	public static double rmse(double[][] M, double[][] P) {
-		if (!Part1.isMatrix(M) || !Part1.isMatrix(P)) return -1; //avoid to treat input that aren't matrixes
+		if (!isMatrix(M) || !isMatrix(P)) return -1; //avoid to treat input that aren't matrixes
 		else {
 			if (M.length != P.length || M[0].length != P[0].length) return -1; //different dimensions
 			else {
@@ -121,7 +121,7 @@ public class Recommendation {
 	}
 	
 	public static double updateUElem( double[][] M, double[][] U, double[][] V, int r, int s ) {
-		/* Méthode à  coder */	
+		/* Méthode à coder */
 		return 0;
 	}
 	
@@ -146,9 +146,80 @@ public class Recommendation {
 	}
 	
 	public static void main(String[] args) {
-		//System.out.println(matrixToString(createMatrix(20, 20, 0, 5)));
-		//createMatrix(5, 5, 0, 5);
-		/*double[][] A = createMatrix(2, 2, 0, 5);
+		System.out.println("Test 1 (matrixToString):");
+		double[][] M = {
+			{ 11, 0, 9, 8, 7 },
+			{ 18, 0, 18, 18, 18 },
+			{ 29, 28, 27, 0, 25 },
+			{ 6, 6, 0, 6, 6 },
+			{ 17, 16, 15, 14, 0 }
+		};
+		double U[][] = { {1,1}, {1,1}, {1,1}, {1,1}, {1,1} };
+		double V[][] = { {1,1,1,1,1}, {1,1,1,1,1} };
+		System.out.println(matrixToString(M));
+
+
+		System.out.println("\nTest 2 (isMatrix):");
+		double[][] testMatrix = {
+			{11.0,0.0,9.0,8.0,7.0},
+			{18.0,0.0,18.0,18.0,18.0},
+			{29.0,28.0,27.0,0.0,25.0},
+			{6.0,6.0,0.0,6.0,6.0},
+			{17.0,16.0,15.0,14.0,0.0}
+		};
+		double T[][] = {{ 1, 0, 2},{ 0, 1}};
+		System.out.println("M est une matrice: " + isMatrix(M));
+		System.out.println("testMatrix est une matrice: " + isMatrix(testMatrix));
+		System.out.println("T est une matrice: " + isMatrix(T));
+
+
+		System.out.println("\nTest 3 (multiplyMatrix): ");
+		double[][] A = {{ 1, 0, 2}, { 0, 1, 1}};
+		double[][] B = {{ 1, 2},{ 0, 1},{ 1, 0}};
+		System.out.println("A*B = \n" + matrixToString(multiplyMatrix(A, B)));
+
+
+		System.out.println("\nTest 4 (createMatrix): ");
+		System.out.println("Matrice au pif: \n" + matrixToString(createMatrix(2,3,0,5)));
+
+
+		System.out.println("\nTest 5 (RMSE): ");
+		double[][] m1 = {{ 1, 0, 0},{ 0, 1, 1}};
+		double[][] p1 = {{ 1, 0, 2},{ 0, 1, 1}};
+		System.out.println("Test 1 de RMSE (expect 0.0): " + rmse(m1, p1));
+		double[][] m2 = {{ 1, 0, 1},{ 0, 1, 1}};
+		double[][] p2 = {{ 1, 0, 2},{ 3, 1, 1}};
+		System.out.println("Test 2 de RMSE (expect 0.5): " + rmse(m2, p2));
+		double[][] m3 = {{ 1, 0, 1},{ 0, 1, 1}};
+		double[][] p3 = {{ 1, 0},{ 3, 1}};
+		System.out.println("Test 3 de RMSE (expect -1): " + rmse(m3, p3));
+
+		System.out.println("\nTest 6 (updateUElem): ");
+		double[][] m0 = {
+			{ 11, 0, 9, 8, 7 },
+			{ 18, 0, 18, 18, 18 },
+			{ 29, 28, 27, 0, 25 },
+			{ 6, 6, 0, 6, 6 },
+			{ 17, 16, 15, 14, 0 }
+		};
+		double[][] m1_2 = {
+			{ 0, 8, 9, 8, 7 },
+			{ 18, 0, 18, 18, 18 },
+			{ 29, 28, 27, 0, 25 },
+			{ 6, 6, 0, 6, 6 },
+			{ 17, 16, 15, 14, 0 }
+		};
+
+		double u1[][] = { {2,2}, {2,2}, {2,2}, {2,2}, {2,2} };
+		double v1[][] = { {1,1,1,1,1}, {1,1,1,1,1} };
+		//System.out.println("Test 1 de updateUElem (expect ~6.750): " + updateUElem(m0, u1, v1, 0, 0));
+		//System.out.println("Test 2 de updateUElem (expect ~6.000): " + updateUElem(m1_2, u1, v1, 0, 0));
+
+
+		/*
+		System.out.println(matrixToString(createMatrix(20, 20, 0, 5)));
+		createMatrix(5, 5, 0, 5);
+		double[][] A = createMatrix(2, 2, 0, 5);
 		double[][] B = createMatrix(2, 2, 0, 5);
 		System.out.println(matrixToString(A));
 		System.out.println(matrixToString(B));
@@ -159,7 +230,8 @@ public class Recommendation {
 		System.out.println(matrixToString(P));
 		System.out.println(rmse(M, P));
 		double[][] M2 = {{0,0},{0,0}};
-		System.out.println(rmse(M2, P));*/
+		System.out.println(rmse(M2, P));
+		*/
 	}
 }
 
