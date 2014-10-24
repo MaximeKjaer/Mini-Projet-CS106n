@@ -21,6 +21,6 @@ Mini-projet d'Introduction à la Programmation (CS-106n): Un système de recomme
 
 - [ ] Part 3
 
- - [ ] optimizeU
- - [ ] optimizeV
+ - [X] optimizeU (though we can't know if it is right yet)
+ - [X] optimizeV (though we can't know if it is right yet)
  - [ ] recommend
