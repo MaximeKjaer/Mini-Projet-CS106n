@@ -1,5 +1,8 @@
 #Changelog#
 
+24.10
+- UpdateU/Velem ok, OptimizeU/V ok. Recommend works quite fine. Still need to work on how U/V are generated, how I count the stuff. Need to implement Netflix data
+
 22.10
 - reworked createMatrix to finally fit myself and the instructions
 
