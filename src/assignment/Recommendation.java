@@ -193,7 +193,7 @@ public class Recommendation {
 		do {
 			rmseStart = rmseEnd;
 			//System.out.println("RMSE Start: " + rmseStart);
-			int order = random.nextInt(Integer.MAX_VALUE) % 4;
+			int order = random.nextInt(Integer.MAX_VALUE) % 4; //The order in which we update the elements is randomly selected
 			switch (order) {
 			case 0 : 
 				for (int i = 0; i < rows; ++i) {
@@ -239,7 +239,7 @@ public class Recommendation {
 		do {
 			rmseStart = rmseEnd;
 			//System.out.println("RMSE Start: " + rmseStart);
-			int order = random.nextInt(Integer.MAX_VALUE) % 4;
+			int order = random.nextInt(Integer.MAX_VALUE) % 4; //The order in which we update the elements is randomly selected
 			switch (order) {
 			case 0 : 
 				for (int i = 0; i < rows; ++i) {
@@ -362,7 +362,8 @@ public class Recommendation {
 						}
 						//update the score
 						int newScore = recommendationStats.get(j).get(index) + 1;
-						recommendationStats.get(j).replace(index, newScore);
+						// put will do the job of replace (except for the fact that it creates a new key if it doesn't exist).
+						recommendationStats.get(j).put(index, newScore);
 					}
 				}
 			}
@@ -375,7 +376,8 @@ public class Recommendation {
 					int max = -1, index = -1;
 					//get the index where the value is at its maximum
 					for (int j = 0; j < M[i].length; ++j) {
-						int value = recommendationStats.get(i).getOrDefault(j, -1);
+						//Can't call getOrDefault on a hashmap, so we use this workaround (many uglies, such work anyway)
+						int value = recommendationStats.get(i).get(j) == null ? -1 : recommendationStats.get(i).get(j);
 						if (value > max) {
 							max = value;
 							index = j;
@@ -414,14 +416,14 @@ public class Recommendation {
 		for (int i = 0; i < row * (int) Math.ceil(Math.sqrt(col)); ++i) {
 			M[random.nextInt(row)][random.nextInt(col)] = 0;
 		}
-		
 		afficheTableau(recommend(M, 2));
 		for (int i = 0; i < recommendationStats.size(); ++i) {
 			if (recommendationStats.get(i).isEmpty()) System.out.println("line " + i + " contains no 0");
 			else {
 				System.out.print("line " + i + " : ");
 				for (int j = 0; j < M[i].length; ++j) {
-					int value = recommendationStats.get(i).getOrDefault(j, -1);
+					//Can't call getOrDefault on a hashmap, so we use this workaround (many uglies, such work anyway)
+					int value = recommendationStats.get(i).get(j) == null ? -1 : recommendationStats.get(i).get(j);
 					if (value > -1) System.out.print(j + " p " + value + ", ");
 				}
 				System.out.println();
