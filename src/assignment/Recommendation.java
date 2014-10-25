@@ -21,7 +21,7 @@ public class Recommendation {
 	
 	private static Random random = new Random();
 
-	private static final double EPSILON = 1e-5; // epsilon due to how double works
+	private static final double EPSILON = 1e-6; // epsilon due to how double works + for test on difference of rmse
 	private static ArrayList<HashMap<Integer, Integer>> recommendationStats = new ArrayList<HashMap<Integer, Integer>>();
 
 	public static String matrixToString(double[][] A) {
@@ -92,7 +92,7 @@ public class Recommendation {
 		}
 		else {
 			double[][] randomMatrix = new double[n][m];
-			if (k != l) { //else we return the default n x m matrix
+			if (k != l) { //else we return a n x m matrix containing k for all elements
 				for (int i = 0; i < n; ++i) {
 					for (int j = 0; j < m; ++j) {
 						double randomMultipler = random.nextInt(Integer.MAX_VALUE)/(Integer.MAX_VALUE-1.);
@@ -100,6 +100,9 @@ public class Recommendation {
 						randomMatrix[i][j] = (l-k)*randomMultipler + k; // => in [k,l]
 					}
 				}
+			}
+			else {
+				randomMatrix = createStartingMatrix(n, m, k, 0);
 			}
 			return randomMatrix;
 		}
@@ -319,17 +322,17 @@ public class Recommendation {
 			final int NUMBER_ITERATION = 100;
 			situateZeros(M);
 			double startingValue = calculateStartingValue(M, d);
-			double variation = Math.log(startingValue);
+			//double variation = Math.log(startingValue);
 			double avgRMSE = 0;
 			//System.out.println(startingValue + " " + variation);
 			for (int i = 0; i < NUMBER_ITERATION; ++i) {
-				double[][] U = createStartingMatrix(M.length, d, startingValue, i == 0 ? 0 : variation);
+				double[][] U = createStartingMatrix(M.length, d, startingValue, i/NUMBER_ITERATION);
 				//System.out.println(matrixToString(U));
-				double[][] V = createStartingMatrix(d, M[0].length, startingValue, i == 0 ? 0 : variation);
+				double[][] V = createStartingMatrix(d, M[0].length, startingValue, i/NUMBER_ITERATION);
 				//System.out.println(matrixToString(V));
-				double rmseStart = 0, rmseEnd = 0;
+				double rmseStart = 0, rmseEnd = rmse(M, multiplyMatrix(U, V));;
 				do {
-					rmseStart = rmse(M, multiplyMatrix(U, V));
+					rmseStart = rmseEnd;
 					//System.out.println("RMSE Start: " + rmseStart);
 					if (random.nextInt(Integer.MAX_VALUE) % 2 == 0) {
 						optimizeU(M, U, V);
@@ -342,7 +345,7 @@ public class Recommendation {
 					rmseEnd = rmse(M, multiplyMatrix(U, V));
 					//System.out.println("RMSE End: " + rmseEnd);
 				} while ((rmseStart - rmseEnd) >= 1e-5);
-				avgRMSE += rmseEnd;
+				avgRMSE += rmse(P, multiplyMatrix(U, V));
 				
 				//Update of recommendationStats
 				for (int j = 0; j < M.length; ++j) {
@@ -376,11 +379,12 @@ public class Recommendation {
 					int max = -1, index = -1;
 					//get the index where the value is at its maximum
 					for (int j = 0; j < M[i].length; ++j) {
-						//Can't call getOrDefault on a hashmap, so we use this workaround (many uglies, such work anyway)
-						int value = recommendationStats.get(i).get(j) == null ? -1 : recommendationStats.get(i).get(j);
-						if (value > max) {
-							max = value;
-							index = j;
+						if (recommendationStats.get(i).containsKey(j)) {
+							int value = recommendationStats.get(i).get(j);
+							if (value > max) {
+								max = value;
+								index = j;
+							}
 						}
 					}
 					output[i] = index;
@@ -395,8 +399,27 @@ public class Recommendation {
 		System.out.println();
 	}
 	
+	private static int[] getRealRecommendation() {
+		int[] ouptut = new int[P.length];
+		for (int i = 0; i < P.length; ++i) {
+			int index = -1;
+			double max = Double.NEGATIVE_INFINITY;
+			for (int j = 0; j < P[i].length; ++j) {
+				if (Math.abs(M[i][j]) < EPSILON && P[i][j] > max) {
+					max = P[i][j];
+					index = j;
+				}
+			}
+			ouptut[i] = index;
+		}
+		return ouptut;
+	}
+	
+	private static int row = 10, col = 10, d = 2;
+	private static double[][] P = multiplyMatrix(createMatrix(row, d, 1, 5), createMatrix(d, col, 1, 5)), M = new double[row][col];
+	
 	public static void main(String[] args) {
-		int row = 5, col = 5;
+		
 		/*double[][] P = {{6.0, 12.0, 3.0, 6.0, 9.0, 18.0},
 				{3.0, 5.0, 2.0, 3.0, 4.0, 9.0},
 				{2.0, 6.0, 0.0, 2.0, 4.0, 6.0},
@@ -407,7 +430,6 @@ public class Recommendation {
 				{0.0, 0.0, 0.0, 2.0, 4.0, 6.0},
 				{6.0, 12.0, 3.0, 0.0, 0.0, 18.0},
 				{4.0, 0.0, 1.0, 4.0, 0.0, 12.0}};*/
-		double[][] P = createMatrix(row, col, 1, 20), M = new double[row][col];
 		for (int i = 0; i < row; ++i) {
 			for (int j = 0; j < col; ++j) {
 				M[i][j] = P[i][j];
@@ -416,22 +438,29 @@ public class Recommendation {
 		for (int i = 0; i < row * (int) Math.ceil(Math.sqrt(col)); ++i) {
 			M[random.nextInt(row)][random.nextInt(col)] = 0;
 		}
-		afficheTableau(recommend(M, 2));
-		for (int i = 0; i < recommendationStats.size(); ++i) {
+		int[] recommendation = recommend(M, 2);
+		int[] real = getRealRecommendation();
+		int score = 0;
+		for (int i = 0; i < recommendation.length; ++i) {
+			if (recommendation[i] == real[i]) ++score;
+		}
+		System.out.println(score + " out of " + recommendation.length);
+		/*for (int i = 0; i < recommendationStats.size(); ++i) {
 			if (recommendationStats.get(i).isEmpty()) System.out.println("line " + i + " contains no 0");
 			else {
 				System.out.print("line " + i + " : ");
 				for (int j = 0; j < M[i].length; ++j) {
-					//Can't call getOrDefault on a hashmap, so we use this workaround (many uglies, such work anyway)
-					int value = recommendationStats.get(i).get(j) == null ? -1 : recommendationStats.get(i).get(j);
-					if (value > -1) System.out.print(j + " p " + value + ", ");
+					if (recommendationStats.get(i).containsKey(j)) {
+						int value = recommendationStats.get(i).get(j);
+						if (value > -1) System.out.print(j + " p " + value + ", ");
+					}
 				}
 				System.out.println();
 			}
-		}
+		}*/
 		
-		System.out.println(matrixToString(P));
-		System.out.println(matrixToString(M));
+		//System.out.println(matrixToString(P));
+		//System.out.println(matrixToString(M));
 		
 		/*double[][] M = {
 			{ 11, 0, 9, 8, 7 },

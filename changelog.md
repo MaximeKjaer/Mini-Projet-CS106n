@@ -1,7 +1,16 @@
 #Changelog#
 
+25.10
+- Java 7 compatible
+- Created automatized test to output to compare recommended output vs computed expected output
+- Changed the way how P is computed (to fit the instructions)
+- Still need to find a way to better it :)
+ - absurd : don't consider if any input is out of initial possible range
+ - don't consider if RMSE is too big
+
 24.10
-- UpdateU/Velem ok, OptimizeU/V ok. Recommend works quite fine. Still need to work on how U/V are generated, how I count the stuff. Need to implement Netflix data
+- UpdateU/Velem ok, OptimizeU/V ok. Recommend works quite fine. Still need to work on how U/V are generated, how I count the stuff.
+- Need to implement Netflix data
 
 22.10
 - reworked createMatrix to finally fit myself and the instructions
