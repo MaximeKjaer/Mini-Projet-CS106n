@@ -1,5 +1,16 @@
 #Changelog#
 
+26.10
+- approximately 100% correct result with a 150x20 matrix filled at 30%
+ - Changed the way to consider an input : if U*V has a negative = don't take into account. => drastically improved results
+ - Still have problem in if the 2 entries (the biggest ones) are different at the first / second decimal => which means nothing in fact :)
+- changed the order of stuff to look like private / publi attributs, private / publi methods
+
+## To change##
+- Maybe too greedy (20 iterations)
+- Need to implement Netflix stuff
+- Revisit how points are granted (only the best result per line receive 1 point per iteration right now)
+
 25.10
 - Java 7 compatible
 - Created automatized test to output to compare recommended output vs computed expected output

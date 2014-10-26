@@ -5,12 +5,18 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class Recommendation {
-
-	/*
-	 * Inscrivez votre nom complet (prénom et nom de famille)
-	 * ainsi que votre numéro sciper ci-dessous :
-	 */
 	
+	//PRIVATE ATTRIBUTS
+	private static Random random = new Random();
+
+	private static final double EPSILON = 1e-5; // epsilon due to how double works + for test on difference of rmse
+	private static ArrayList<HashMap<Integer, Integer>> recommendationStats = new ArrayList<HashMap<Integer, Integer>>();
+	
+	//Debug purpose
+	private static int row = 150, col = 20, d = 2;
+	private static double[][] P = multiplyMatrix(createMatrix(row, d, 1, 5), createMatrix(d, col, 1, 5)), M = new double[row][col];
+	
+	//PUBLIC ATTRIBUTS
 	/* Etudiant 1 */
 	public static String NAME1 = "Timoté Vaucher";
 	public static int SCIPER1 = 246532;
@@ -19,11 +25,70 @@ public class Recommendation {
 	public static String NAME2 = "Maxime Kjaer";
 	public static int SCIPER2 = 250694;
 	
-	private static Random random = new Random();
-
-	private static final double EPSILON = 1e-6; // epsilon due to how double works + for test on difference of rmse
-	private static ArrayList<HashMap<Integer, Integer>> recommendationStats = new ArrayList<HashMap<Integer, Integer>>();
-
+	//PRIVATE METHODS
+	private static double calculateStartingValue(double[][] M, int d) {
+		int amountNonZero = 0;
+		double sum = 0;
+		for (int i = 0; i < M.length; ++i) {
+			for (int j = 0; j < M[0].length; ++j) {
+				if (Math.abs(M[i][j]) > EPSILON) {
+					++amountNonZero;
+					sum += M[i][j];
+				}
+			}
+		}
+		return amountNonZero == 0 ? 0 : Math.sqrt(sum/(amountNonZero*d));
+	}
+	
+	private static double[][] createStartingMatrix(int amountRow, int amountCol, double startingValue, double variation) {
+		//To be reworked on
+		double[][] startingMatrix = new double[amountRow][amountCol];
+		for (int i = 0; i < amountRow; ++i) {
+			for (int j = 0; j < amountCol; ++j) {
+				startingMatrix[i][j] = startingValue + (random.nextInt(Integer.MAX_VALUE) % 2 == 0 ? random.nextDouble()*variation : -random.nextDouble()*variation);
+			}
+		}
+		return startingMatrix;
+	}
+	
+	private static void situateZeros(double[][] M) {
+		//function that find the indexes of zeros in M
+		for (int i = 0; i < M.length; ++i) {
+			recommendationStats.add(new HashMap<Integer, Integer>());
+			for (int j = 0; j < M[i].length; ++j) {
+				if (Math.abs(M[i][j]) < EPSILON) {
+					recommendationStats.get(i).put(j, 0);
+				}
+			}
+		}
+	}
+	
+	private static void printArray(double[] tab) { //Debug purpose
+		for (int i = 0; i < tab.length; ++i) System.out.print(i + " : [" + tab[i] + "], ");
+		System.out.println();
+	}
+	
+	private static int[] getRealRecommendation() { //Debug purpose
+		int[] ouptut = new int[P.length];
+		for (int i = 0; i < P.length; ++i) {
+			int index = -1, amountZeroM = 0;
+			double max = 0;
+			for (int j = 0; j < P[i].length; ++j) {
+				if (Math.abs(M[i][j]) < EPSILON) {
+					if (P[i][j] > max) {
+						max = P[i][j];
+						index = j;
+					}
+					++amountZeroM;
+				}
+			}
+			if (amountZeroM == P[i].length) index = -1;
+			ouptut[i] = index;
+		}
+		return ouptut;
+	}
+	
+	//PUBLIC METHODS - original ones, to be evaluated	
 	public static String matrixToString(double[][] A) {
 		//We return null if matrix is null to avoid unnecessary exceptions
 		if (A == null) return null;
@@ -77,7 +142,12 @@ public class Recommendation {
 							valueAtij += A[i][d] * B[d][j];
 						}
 						//we update the value in the outputMatrix
-						outputMatrix[i][j] = valueAtij;
+							if (valueAtij < 0) {
+								//System.out.println("Multiplication resluted in a negative result : " + valueAtij + " which isn't allowed");
+								double[][] emptyMatrix = {{}};
+								return emptyMatrix;
+							}
+							else outputMatrix[i][j] = valueAtij;
 					}
 				}
 				return outputMatrix;
@@ -127,7 +197,7 @@ public class Recommendation {
 			}
 		}
 	}
-		
+	
 	public static double updateUElem(double[][] M, double[][] U, double[][] V, int r, int s) {
 		double denominator = 0;
 		double numerator = 0;
@@ -193,6 +263,7 @@ public class Recommendation {
 		double rmseEnd = rmse(M, multiplyMatrix(U, V));
 		int rows = U.length;
 		int cols = U[0].length;
+		
 		do {
 			rmseStart = rmseEnd;
 			//System.out.println("RMSE Start: " + rmseStart);
@@ -279,58 +350,23 @@ public class Recommendation {
 		return V;
 	}
 
-	private static double calculateStartingValue(double[][] M, int d) {
-		int amountNonZero = 0;
-		double sum = 0;
-		for (int i = 0; i < M.length; ++i) {
-			for (int j = 0; j < M[0].length; ++j) {
-				if (Math.abs(M[i][j]) > EPSILON) {
-					++amountNonZero;
-					sum += M[i][j];
-				}
-			}
-		}
-		return amountNonZero == 0 ? 0 : Math.sqrt(sum/(amountNonZero*d));
-	}
-	
-	private static double[][] createStartingMatrix(int amountRow, int amountCol, double startingValue, double variation) {
-		//To be reworked on
-		double[][] startingMatrix = new double[amountRow][amountCol];
-		for (int i = 0; i < amountRow; ++i) {
-			for (int j = 0; j < amountCol; ++j) {
-				startingMatrix[i][j] = startingValue + (random.nextInt(Integer.MAX_VALUE) % 2 == 0 ? random.nextDouble()*variation : -random.nextDouble()*variation);
-			}
-		}
-		return startingMatrix;
-	}
-	
-	private static void situateZeros(double[][] M) {
-		//function that find the indexes of zeros in M
-		for (int i = 0; i < M.length; ++i) {
-			recommendationStats.add(new HashMap<Integer, Integer>());
-			for (int j = 0; j < M[i].length; ++j) {
-				if (Math.abs(M[i][j]) < EPSILON) {
-					recommendationStats.get(i).put(j, 0);
-				}
-			}
-		}
-	}
-	
-	public static int[] recommend(double[][] M, int d) {
+	//TO BE WORKED ON MOAR !!!
+	public static int[] recommend(double[][] M, int d, double initialValue) {
 		if (!isMatrix(M) || d <= 0) return null;
 		else {
-			final int NUMBER_ITERATION = 100;
+			final int NUMBER_ITERATION = 20;
 			situateZeros(M);
-			double startingValue = calculateStartingValue(M, d);
+			double startingValue = initialValue;//
 			//double variation = Math.log(startingValue);
 			double avgRMSE = 0;
+			int notNegativeEntry = 0;
 			//System.out.println(startingValue + " " + variation);
 			for (int i = 0; i < NUMBER_ITERATION; ++i) {
 				double[][] U = createStartingMatrix(M.length, d, startingValue, i/NUMBER_ITERATION);
 				//System.out.println(matrixToString(U));
 				double[][] V = createStartingMatrix(d, M[0].length, startingValue, i/NUMBER_ITERATION);
 				//System.out.println(matrixToString(V));
-				double rmseStart = 0, rmseEnd = rmse(M, multiplyMatrix(U, V));;
+				double rmseStart = 0, rmseEnd = rmse(M, multiplyMatrix(U, V));
 				do {
 					rmseStart = rmseEnd;
 					//System.out.println("RMSE Start: " + rmseStart);
@@ -342,39 +378,50 @@ public class Recommendation {
 						optimizeV(M, U, V);
 						optimizeU(M, U, V);
 					}
-					rmseEnd = rmse(M, multiplyMatrix(U, V));
+					double[][] intermediateUV = multiplyMatrix(U, V);
+					if (intermediateUV.length == 0 || intermediateUV[0].length == 0) break;
+					else rmseEnd = rmse(M, intermediateUV);
 					//System.out.println("RMSE End: " + rmseEnd);
 				} while ((rmseStart - rmseEnd) >= 1e-5);
-				avgRMSE += rmse(P, multiplyMatrix(U, V));
-				
-				//Update of recommendationStats
-				for (int j = 0; j < M.length; ++j) {
-					if (!recommendationStats.get(j).isEmpty()) {
-						double[][] P = multiplyMatrix(U, V);
-						double max = Double.NEGATIVE_INFINITY;
-						int index = -1;
-						for (int k = 0; k < M[j].length; ++k) {
-							//chose the highest score for indexes of M where there is a zero
-							if(recommendationStats.get(j).containsKey(k)) {
-								double value = P[j][k];
-								if (value > max) {
-									max = value;
-									index = k;
+				double[][] optimizedUV = multiplyMatrix(U, V);
+				if (optimizedUV.length != 0 && optimizedUV[0].length != 0) {
+					avgRMSE += rmse(P, optimizedUV);
+					++notNegativeEntry;
+					//Update of recommendationStats
+					for (int j = 0; j < M.length; ++j) {
+						if (!recommendationStats.get(j).isEmpty() && recommendationStats.get(j).size() != M[j].length) {
+							double max = Double.NEGATIVE_INFINITY;
+							int index = -1;
+							for (int k = 0; k < M[j].length; ++k) {
+								//chose the highest score for indexes of M where there is a zero
+								if(recommendationStats.get(j).containsKey(k)) {
+									double value = optimizedUV[j][k];
+									if (value > max) {
+										max = value;
+										index = k;
+									}
 								}
 							}
+							//update the score
+							int newScore = recommendationStats.get(j).get(index) +  1;
+							// put will do the job of replace (except for the fact that it creates a new key if it doesn't exist).
+							recommendationStats.get(j).put(index, newScore);
 						}
-						//update the score
-						int newScore = recommendationStats.get(j).get(index) + 1;
-						// put will do the job of replace (except for the fact that it creates a new key if it doesn't exist).
-						recommendationStats.get(j).put(index, newScore);
 					}
 				}
 			}
-			System.out.println("avg rmse : " + avgRMSE/NUMBER_ITERATION);
+			if (notNegativeEntry == 0) {
+				System.out.println("all entries had negative values, retry to recommend ongoing");
+				//System.out.println(matrixToString(M));
+				//System.out.println(matrixToString(P));
+				return recommend(M, d, startingValue*1.1);
+			}
+			
 			//Decision of the best prediction for each user
 			int[] output = new int[M.length];
+			int amountZerosM = 0;
 			for (int i = 0; i < M.length; ++i) {
-				if (recommendationStats.get(i).isEmpty()) output[i] = -1;
+				if (recommendationStats.get(i).isEmpty() || recommendationStats.get(i).size() == M[i].length) output[i] = -1;
 				else {
 					int max = -1, index = -1;
 					//get the index where the value is at its maximum
@@ -385,79 +432,62 @@ public class Recommendation {
 								max = value;
 								index = j;
 							}
-						}
+							++amountZerosM;
+						}						
 					}
 					output[i] = index;
+
 				}
 			}
+			
+			//DEBUG PURPOSE
+			System.out.println("avg rmse with original P : " + avgRMSE/notNegativeEntry);
+			System.out.println("amount of considered entries : " +notNegativeEntry + "/"+ NUMBER_ITERATION + " : " + (100.*notNegativeEntry)/NUMBER_ITERATION + "%");
+			System.out.println("amount of zeros in M : " + amountZerosM + "/" + col*row + " : " + (100.*amountZerosM)/(col*row) + "%");
+			
 			return output;
 		}
 	}
-	
-	private static void afficheTableau(int[] tab) {
-		for (int i = 0; i < tab.length; ++i) System.out.print(i + " : " + tab[i] + ", ");
-		System.out.println();
+	public static int[] recommend(double[][] M, int d) { //First call
+		return recommend(M, d, calculateStartingValue(M, d));
 	}
-	
-	private static int[] getRealRecommendation() {
-		int[] ouptut = new int[P.length];
-		for (int i = 0; i < P.length; ++i) {
-			int index = -1;
-			double max = Double.NEGATIVE_INFINITY;
-			for (int j = 0; j < P[i].length; ++j) {
-				if (Math.abs(M[i][j]) < EPSILON && P[i][j] > max) {
-					max = P[i][j];
-					index = j;
-				}
-			}
-			ouptut[i] = index;
-		}
-		return ouptut;
-	}
-	
-	private static int row = 10, col = 10, d = 2;
-	private static double[][] P = multiplyMatrix(createMatrix(row, d, 1, 5), createMatrix(d, col, 1, 5)), M = new double[row][col];
-	
 	public static void main(String[] args) {
-		
-		/*double[][] P = {{6.0, 12.0, 3.0, 6.0, 9.0, 18.0},
-				{3.0, 5.0, 2.0, 3.0, 4.0, 9.0},
-				{2.0, 6.0, 0.0, 2.0, 4.0, 6.0},
-				{6.0, 12.0, 3.0, 6.0, 9.0, 18.0},
-				{4.0, 10.0, 1.0, 4.0, 7.0, 12.0}};
-		double[][] M = {{6.0, 12.0, 3.0, 6.0, 0.0, 0.0},
-				{3.0, 5.0, 2.0, 3.0, 0.0, 9.0},
-				{0.0, 0.0, 0.0, 2.0, 4.0, 6.0},
-				{6.0, 12.0, 3.0, 0.0, 0.0, 18.0},
-				{4.0, 0.0, 1.0, 4.0, 0.0, 12.0}};*/
 		for (int i = 0; i < row; ++i) {
 			for (int j = 0; j < col; ++j) {
 				M[i][j] = P[i][j];
 			}
 		}
-		for (int i = 0; i < row * (int) Math.ceil(Math.sqrt(col)); ++i) {
+		for (int i = 0; i < 5 * row * Math.ceil(Math.sqrt(col)); ++i) {
 			M[random.nextInt(row)][random.nextInt(col)] = 0;
 		}
-		int[] recommendation = recommend(M, 2);
+		int[] recommendation = recommend(M, d);
 		int[] real = getRealRecommendation();
 		int score = 0;
+		ArrayList<Integer> error = new ArrayList<Integer>();
 		for (int i = 0; i < recommendation.length; ++i) {
 			if (recommendation[i] == real[i]) ++score;
-		}
-		System.out.println(score + " out of " + recommendation.length);
-		/*for (int i = 0; i < recommendationStats.size(); ++i) {
-			if (recommendationStats.get(i).isEmpty()) System.out.println("line " + i + " contains no 0");
 			else {
-				System.out.print("line " + i + " : ");
+				System.out.println("error on line " + i + " expected : " + real[i] + ", recommended : " + recommendation[i]);
+				printArray(P[i]);
+				printArray(M[i]);
+				error.add(i);
+			}
+		}
+		System.out.println(score + " out of " + recommendation.length + " : " + (100.*score)/recommendation.length + "%\n");
+		
+		for (int i = 0; i < error.size(); ++i) {
+			if (recommendationStats.get(error.get(i)).isEmpty()) System.out.println("line " + error.get(i) + " contains no 0");
+			else {
+				System.out.print("line " + error.get(i) + " : ");
 				for (int j = 0; j < M[i].length; ++j) {
-					if (recommendationStats.get(i).containsKey(j)) {
-						int value = recommendationStats.get(i).get(j);
-						if (value > -1) System.out.print(j + " p " + value + ", ");
+					if (recommendationStats.get(error.get(i)).containsKey(j)) {
+						int value = recommendationStats.get(error.get(i)).get(j);
+						if (value > -1) System.out.print(j + " [" + value + "], ");
 					}
 				}
 				System.out.println();
 			}
-		}*/
+		}
 		
 		//System.out.println(matrixToString(P));
 		//System.out.println(matrixToString(M));
