@@ -68,6 +68,12 @@ public class Recommendation {
 		System.out.println();
 	}
 	
+	private static void printArray(int[] tab) { //Debug purpose
+		for (int i = 0; i < tab.length; ++i) System.out.print(i + " : [" + tab[i] + "], ");
+		System.out.println();
+	}
+
+
 	private static int[] getRealRecommendation() { //Debug purpose
 		int[] ouptut = new int[P.length];
 		for (int i = 0; i < P.length; ++i) {
@@ -461,6 +467,8 @@ public class Recommendation {
 			M[random.nextInt(row)][random.nextInt(col)] = 0;
 		}
 		int[] recommendation = recommend(M, d);
+		System.out.println("RECOMMMENDATIONS: ");
+		printArray(recommendation);
 		int[] real = getRealRecommendation();
 		int score = 0;
 		ArrayList<Integer> error = new ArrayList<Integer>();
