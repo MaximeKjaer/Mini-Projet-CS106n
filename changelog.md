@@ -1,10 +1,18 @@
 #Changelog#
 
+27.10
+- changed lot's of things. Was very optimistic yesterday I suppose :3
+- it's all about fine tuning right now, parameters :
+ - Epsilon
+ - Number_iteration
+ - how points are given
+ - deviation when in create U*V
+
 26.10
 - approximately 100% correct result with a 150x20 matrix filled at 30%
  - Changed the way to consider an input : if U*V has a negative = don't take into account. => drastically improved results
  - Still have problem in if the 2 entries (the biggest ones) are different at the first / second decimal => which means nothing in fact :)
-- changed the order of stuff to look like private / publi attributs, private / publi methods
+- changed the order of stuff to look like private / public  attributs, private / public  methods
 
 ## To change##
 - Maybe too greedy (20 iterations)
