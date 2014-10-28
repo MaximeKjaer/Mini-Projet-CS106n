@@ -9,11 +9,11 @@ public class Recommendation {
 	//PRIVATE ATTRIBUTS
 	private static Random random = new Random();
 
-	private static final double EPSILON = 2e-4; // epsilon is threshold for difference in rmse
+	private static final double EPSILON = 1e-5; // epsilon is threshold for difference in rmse
 	private static ArrayList<HashMap<Integer, Double>> recommendationStats = new ArrayList<HashMap<Integer, Double>>();
 	
 	//Debug purpose
-	private static int row = 100, col = 200, d = 20;
+	private static int row = 10, col = 20, d = 4;
 	private static double[][] P = multiplyMatrix(createMatrix(row, d, 1, 5), createMatrix(d, col, 1, 5)), M = new double[row][col];
 	
 	//PUBLIC ATTRIBUTS
@@ -286,15 +286,15 @@ public class Recommendation {
 		do {
 			rmseStart = rmseEnd;
 			//System.out.println("RMSE Start: " + rmseStart);
-			int order = random.nextInt(Integer.MAX_VALUE) % 4; //The order in which we update the elements is randomly selected
+			/*int order = random.nextInt(Integer.MAX_VALUE) % 4; //The order in which we update the elements is randomly selected
 			switch (order) {
-			case 0 : 
+			case 0 : */
 				for (int i = 0; i < rows; ++i) {
 					for (int j = 0; j < cols; ++j) {
 						U[i][j] = updateUElem(M, U, V, i, j);
 					}
 				}
-				break;
+			/*	break;
 			case 1 :
 				for (int i = rows-1; i >= 0; --i) {
 					for (int j = 0; j < cols; ++j) {
@@ -316,7 +316,7 @@ public class Recommendation {
 					}
 				}
 				break;
-			}
+			}*/
 			rmseEnd = rmse(M, multiplyMatrix(U, V));
 			//System.out.println("RMSE End: " + rmseEnd);
 		} while ((rmseStart - rmseEnd) >= EPSILON);
@@ -330,15 +330,15 @@ public class Recommendation {
 		do {
 			rmseStart = rmseEnd;
 			//System.out.println("RMSE Start: " + rmseStart);
-			int order = random.nextInt(Integer.MAX_VALUE) % 4; //The order in which we update the elements is randomly selected
+			/*int order = random.nextInt(Integer.MAX_VALUE) % 4; //The order in which we update the elements is randomly selected
 			switch (order) {
-			case 0 : 
+			case 0 : */
 				for (int i = 0; i < rows; ++i) {
 					for (int j = 0; j < cols; ++j) {
 						V[i][j] = updateVElem(M, U, V, i, j);
 					}
 				}
-				break;
+			/*	break;
 			case 1 :
 				for (int i = rows-1; i >= 0; --i) {
 					for (int j = 0; j < cols; ++j) {
@@ -360,7 +360,7 @@ public class Recommendation {
 					}
 				}
 				break;
-			}
+			}*/
 			rmseEnd = rmse(M, multiplyMatrix(U, V));
 			//System.out.println("RMSE End: " + rmseEnd);
 		} while ((rmseStart - rmseEnd) >= EPSILON);
@@ -371,7 +371,7 @@ public class Recommendation {
 	public static int[] recommend(double[][] M, int d) {
 		if (!isMatrix(M) || d <= 0) return null;
 		else {
-			final int NUMBER_ITERATION = 2;
+			final int NUMBER_ITERATION = 10;
 			situateZeros(M);
 			double startingValue = calculateStartingValue(M, d);//
 			//double variation = Math.log(startingValue);
@@ -480,17 +480,17 @@ public class Recommendation {
 				M[i][j] = P[i][j];
 			}
 		}
-		for (int i = 0; i < (int) (7 * row * Math.ceil(Math.sqrt(col))); ++i) {
+		for (int i = 0; i < (row * col / 2.); ++i) {
 			M[random.nextInt(row)][random.nextInt(col)] = 0;
 		}
 		long startTime = System.currentTimeMillis();
 		int[] recommendation = recommend(M, d);
 		long stopTime = System.currentTimeMillis();
-		System.out.println("Temps écoulé pour recommender : " + (stopTime-startTime) + " ms");
+		System.out.println("Temps écoulé pour recommender : " + (stopTime-startTime)/1000. + " s");
 		System.out.println("RECOMMMENDATIONS: ");
 		printArray(recommendation);
-		int[] real = getRealRecommendation();
-		int score = 0;
+		/*int[] real = getRealRecommendation();
+		int score = 0;*/
 		/*ArrayList<Integer> error = new ArrayList<Integer>();
 		for (int i = 0; i < recommendation.length; ++i) {
 			if (recommendation[i] == real[i]) ++score;
@@ -501,7 +501,7 @@ public class Recommendation {
 				error.add(i);
 			}
 		}*/
-		System.out.println(score + " out of " + recommendation.length + " : " + (100.*score)/recommendation.length + "%\ntrue score : " + getScore(recommendation) + "\n");
+		System.out.println(/*score + " out of " + recommendation.length + " : " + (100.*score)/recommendation.length + "%\ntrue */"score : " + getScore(recommendation) + "\n");
 		
 		/*for (int i = 0; i < error.size(); ++i) {
 			if (recommendationStats.get(error.get(i)).isEmpty()) System.out.println("line " + error.get(i) + " contains no 0");
