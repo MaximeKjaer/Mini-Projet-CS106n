@@ -3,6 +3,10 @@ mini-projet-UV-Decomposition
 
 Mini-projet d'Introduction à la Programmation (CS-106n): Un système de recommendation UV-Decomposition en Java.
 
+Status: Done!
+=============
+
+Ready to be open-sourced as soon as soon as we get our grade back.
 
 ## Tasks
 
@@ -19,10 +23,8 @@ Mini-projet d'Introduction à la Programmation (CS-106n): Un système de recomme
   - [X] updateUElem
   - [X] updateVElem
 
-- [ ] Part 3
+- [X] Part 3
 
  - [X] optimizeU 
  - [X] optimizeV 
- - [ ] recommend //still working on it
-
-- [ ] NetFlix implementation
+ - [X] recommend
