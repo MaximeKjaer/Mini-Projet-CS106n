@@ -1,5 +1,10 @@
 #Changelog#
 
+2.11
+- final version in my opinon
+- change Number_iteration depending on d
+- epsilon 1e-5 for all d<10, else 1e-4
+
 27.10
 - changed lot's of things. Was very optimistic yesterday I suppose :3
 - it's all about fine tuning right now, parameters :
