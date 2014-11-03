@@ -248,35 +248,27 @@ public class Recommendation {
 		return denominator <= epsilon ? 0. : (numerator / denominator);
 	}
 	
+	/* Concerning optimizeU/optimizeV
+	 * After some testing, it has been proved that updating only once each element of U/V
+	 * has resulted in the only huge optimization of recommend compared to updating U/V up to a threshold
+	 */
 	public static double[][] optimizeU( double[][] M, double[][] U, double[][] V) {
-		double rmseStart = 0, rmseEnd = rmse(M, multiplyMatrix(U, V));
 		int rows = U.length, cols = U[0].length;
-		
-		do {
-			rmseStart = rmseEnd;
-			for (int i = 0; i < rows; ++i) {
-				for (int j = 0; j < cols; ++j) {
-					U[i][j] = updateUElem(M, U, V, i, j);
-				}
+		for (int i = 0; i < rows; ++i) {
+			for (int j = 0; j < cols; ++j) {
+				U[i][j] = updateUElem(M, U, V, i, j);
 			}
-			rmseEnd = rmse(M, multiplyMatrix(U, V));
-		} while ((rmseStart - rmseEnd) >= epsilon);
+		}
 		return U;
 	}
 
 	public static double[][] optimizeV( double[][] M, double[][] U, double[][] V) {
-		double rmseStart = 0, rmseEnd = rmse(M, multiplyMatrix(U, V));
 		int rows = V.length, cols = V[0].length;
-		
-		do {
-			rmseStart = rmseEnd;
-			for (int i = 0; i < rows; ++i) {
-				for (int j = 0; j < cols; ++j) {
-					V[i][j] = updateVElem(M, U, V, i, j);
-				}
+		for (int i = 0; i < rows; ++i) {
+			for (int j = 0; j < cols; ++j) {
+				V[i][j] = updateVElem(M, U, V, i, j);
 			}
-			rmseEnd = rmse(M, multiplyMatrix(U, V));
-		} while ((rmseStart - rmseEnd) >= epsilon);
+		}
 		return V;
 	}
 
@@ -296,17 +288,18 @@ public class Recommendation {
 				int order = 0;
 				do {
 					rmseStart = rmseEnd;
-					if (order == 0) {
+					switch (order) {
+					case 0 : //alternate order of optimize U/V
 						optimizeU(M, U, V);
 						optimizeV(M, U, V);
 						++order;
-					}
-					else {
+						break;
+					default :
 						optimizeV(M, U, V);
 						optimizeU(M, U, V);
 						order = 0;
+						break;
 					}
-
 					double[][] intermediateUV = multiplyMatrix(U, V);
 					if (intermediateUV.length == 0 || intermediateUV[0].length == 0) break;
 					else rmseEnd = rmse(M, intermediateUV);
